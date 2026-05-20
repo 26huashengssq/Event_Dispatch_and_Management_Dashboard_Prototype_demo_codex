@@ -60,3 +60,5 @@ venv/
 *.tar
 *.tar.gz
 *.tgz
+
+*.msi
