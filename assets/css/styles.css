@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   color-scheme: light;
   --bg: #f4f7f6;
   --surface: #ffffff;
@@ -8,10 +8,12 @@
   --line: #d7e0dd;
   --accent: #197278;
   --accent-soft: #d9eeee;
+  --accent-bright: #1e8a92;
   --warning: #b86b00;
   --danger: #b73b45;
   --success: #2f7d51;
   --shadow: 0 10px 28px rgba(22, 33, 31, 0.08);
+  --radius: 8px;
   font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", Arial, sans-serif;
 }
 
@@ -26,43 +28,28 @@ body {
   color: var(--text);
 }
 
+/* ============================================================
+   Header
+   ============================================================ */
 .app-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
-  padding: 28px 32px 22px;
+  padding: 20px 32px 18px;
   border-bottom: 1px solid var(--line);
   background: #ffffff;
 }
 
-h1,
-h2,
-h3,
-p {
-  margin: 0;
-}
+h1, h2, h3, p { margin: 0; }
 
-h1 {
-  margin-top: 6px;
-  font-size: 28px;
-  font-weight: 700;
-}
-
-h2 {
-  margin-top: 4px;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-h3 {
-  font-size: 15px;
-  font-weight: 700;
-}
+h1 { margin-top: 6px; font-size: 26px; font-weight: 700; }
+h2 { margin-top: 4px; font-size: 17px; font-weight: 700; }
+h3 { font-size: 14px; font-weight: 700; }
 
 .eyebrow {
   color: var(--accent);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -88,25 +75,63 @@ h3 {
   font-weight: 600;
 }
 
+/* ============================================================
+   Tab Navigation
+   ============================================================ */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--line);
+}
+
+.tab-btn {
+  padding: 14px 24px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--accent);
+}
+
+.tab-btn--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
 .dashboard-shell {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
-  gap: 18px;
   max-width: 1280px;
   margin: 0 auto;
   padding: 22px 32px 36px;
 }
 
+.dashboard-shell .panel {
+  margin-bottom: 18px;
+}
+
 .panel {
   min-width: 0;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow);
 }
 
 .panel-wide {
-  grid-column: 1 / -1;
+  /* Full width within container */
 }
 
 .panel-heading {
@@ -114,34 +139,73 @@ h3 {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px;
+  padding: 16px 18px;
   border-bottom: 1px solid var(--line);
 }
 
-.district-grid,
-.suggestion-grid {
+/* ============================================================
+   KPI Bar (Dashboard)
+   ============================================================ */
+.kpi-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.kpi-item {
+  padding: 18px 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  text-align: center;
+}
+
+.kpi-item strong {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.kpi-item span {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.kpi-danger strong { color: var(--danger); }
+
+/* ============================================================
+   District Grid + Cards
+   ============================================================ */
+.district-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   padding: 18px;
 }
 
-.district-card,
-.event-card,
-.suggestion-card,
-.detail-placeholder {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #ffffff;
-}
-
-.district-card,
-.suggestion-card {
-  padding: 14px;
-}
-
 .district-card {
+  padding: 14px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
   min-height: 142px;
+}
+
+.district-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(25, 114, 120, 0.12);
+}
+
+.district-card--selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 4px 16px rgba(25, 114, 120, 0.18);
 }
 
 .card-topline {
@@ -171,14 +235,14 @@ h3 {
 }
 
 .metric span,
-.meta,
-.detail-list dt,
-.detail-list dd,
-.suggestion-card p {
+.meta {
   color: var(--muted);
   font-size: 12px;
 }
 
+/* ============================================================
+   Event Stack + Cards
+   ============================================================ */
 .event-stack {
   display: grid;
   gap: 10px;
@@ -187,6 +251,20 @@ h3 {
 
 .event-card {
   padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.event-card:hover {
+  border-color: var(--accent);
+}
+
+.event-card--selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .event-meta {
@@ -196,9 +274,154 @@ h3 {
   margin-top: 10px;
 }
 
+.tag-priority {
+  font-weight: 700;
+}
+
+.empty-msg {
+  padding: 24px;
+  text-align: center;
+}
+
+/* ============================================================
+   Back Button
+   ============================================================ */
+.btn-back {
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-back:hover {
+  background: var(--accent-soft);
+}
+
+/* ============================================================
+   Flow Stages (EventFlow)
+   ============================================================ */
+.flow-stages {
+  display: flex;
+  gap: 0;
+  padding: 18px;
+  overflow-x: auto;
+}
+
+.flow-node {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  min-width: 100px;
+}
+
+.flow-node:not(:last-child) {
+  margin-right: -2px;
+}
+
+.flow-node:hover {
+  border-color: var(--accent);
+}
+
+.flow-node--active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.flow-icon { font-size: 24px; }
+
+.flow-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.flow-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ============================================================
+   Flow Two-Column Layout
+   ============================================================ */
+.flow-two-col {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(320px, 1.2fr);
+  gap: 18px;
+}
+
+/* ============================================================
+   Flow Mini Bar (in event detail)
+   ============================================================ */
+.flow-mini-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 14px 0;
+  padding: 10px;
+  border-radius: 6px;
+  background: var(--surface-muted);
+}
+
+.flow-mini-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.flow-mini-step--done {
+  background: #d4edda;
+  color: var(--success);
+}
+
+.flow-mini-step--current {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.flow-mini-step--pending {
+  background: transparent;
+  color: var(--muted);
+}
+
+.flow-mini-arrow {
+  color: var(--muted);
+  font-size: 10px;
+  margin: 0 2px;
+}
+
+/* ============================================================
+   Detail Placeholder + List
+   ============================================================ */
 .detail-placeholder {
-  margin: 18px;
-  padding: 16px;
+  margin: 0;
+  padding: 16px 18px;
 }
 
 .detail-list {
@@ -210,45 +433,251 @@ h3 {
 
 .detail-list dt {
   font-weight: 700;
+  font-size: 13px;
 }
 
 .detail-list dd {
   margin: 0;
   color: var(--text);
+  font-size: 13px;
 }
 
-.suggestion-card {
-  min-height: 150px;
+/* ============================================================
+   Action Panel
+   ============================================================ */
+.action-panel {
+  border-top: 1px solid var(--line);
 }
 
-.suggestion-card p {
-  margin-top: 10px;
+.action-panel .panel-heading {
+  border-bottom: none;
+}
+
+.action-hint {
+  padding: 0 18px 14px;
+  font-size: 13px;
+  color: var(--muted);
   line-height: 1.6;
 }
 
-.state-normal {
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 18px 16px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-bright);
+}
+
+.btn-secondary {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: var(--line);
+}
+
+.action-feedback {
+  padding: 0 18px 14px;
+}
+
+.feedback-msg {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: #d4edda;
   color: var(--success);
-  background: #e1f2e9;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s, transform 0.3s;
 }
 
-.state-warning {
-  color: var(--warning);
-  background: #fff0d9;
+.feedback-show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.state-danger {
-  color: var(--danger);
+/* ============================================================
+   AI Assist: Risk Summary
+   ============================================================ */
+.risk-summary {
+  padding: 18px;
+}
+
+.risk-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.risk-card {
+  padding: 16px 14px;
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.risk-card strong {
+  display: block;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.risk-card span {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.risk-high {
   background: #fde5e8;
+  color: var(--danger);
 }
 
-.state-processing {
-  color: var(--accent);
+.risk-mid {
+  background: #fff0d9;
+  color: var(--warning);
+}
+
+.risk-low {
+  background: #e1f2e9;
+  color: var(--success);
+}
+
+.risk-done {
   background: var(--accent-soft);
+  color: var(--accent);
 }
 
+/* ============================================================
+   AI Assist: Suggestion Cards (Detailed)
+   ============================================================ */
+.suggestion-grid-detailed {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 18px;
+}
+
+.suggestion-card-full {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  overflow: hidden;
+  transition: opacity 0.3s;
+}
+
+.suggestion-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-muted);
+}
+
+.suggestion-body {
+  padding: 18px;
+}
+
+.suggestion-field {
+  margin-bottom: 14px;
+}
+
+.suggestion-field .field-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.suggestion-field p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.suggestion-confidence {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.confidence-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface-muted);
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--accent);
+  transition: width 0.4s ease;
+}
+
+.suggestion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.suggestion-accepted {
+  opacity: 0.75;
+}
+
+.suggestion-accepted-badge {
+  padding: 14px 18px;
+  border-top: 1px solid var(--line);
+  background: #d4edda;
+  color: var(--success);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ============================================================
+   State Tokens
+   ============================================================ */
+.state-normal { color: var(--success); background: #e1f2e9; }
+.state-warning { color: var(--warning); background: #fff0d9; }
+.state-danger { color: var(--danger); background: #fde5e8; }
+.state-processing { color: var(--accent); background: var(--accent-soft); }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
 @media (max-width: 920px) {
   .app-header,
-  .dashboard-shell {
+  .dashboard-shell,
+  .tab-nav {
     padding-right: 18px;
     padding-left: 18px;
   }
@@ -258,13 +687,24 @@ h3 {
     flex-direction: column;
   }
 
-  .dashboard-shell,
+  .kpi-bar,
   .district-grid,
-  .suggestion-grid {
+  .risk-cards,
+  .suggestion-grid-detailed,
+  .flow-two-col {
     grid-template-columns: 1fr;
   }
 
-  .panel-wide {
-    grid-column: auto;
+  .flow-stages {
+    flex-wrap: wrap;
+  }
+
+  .flow-node {
+    flex: 0 0 auto;
+    min-width: 80px;
+  }
+
+  .flow-node:not(:last-child) {
+    margin-right: 0;
   }
 }

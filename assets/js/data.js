@@ -1,3 +1,7 @@
+﻿// ============================================================
+// 数据层 — 片区、事件、流转节点、AI 建议
+// ============================================================
+
 export const districts = [
   {
     districtId: "district-east",
@@ -34,8 +38,8 @@ export const districts = [
     name: "西区",
     status: "正常",
     statusTone: "normal",
-    todayEvents: 1,
-    pendingEvents: 0,
+    todayEvents: 4,
+    pendingEvents: 1,
     overdueEvents: 0,
     resources: "4 车 / 12 人",
   },
@@ -49,9 +53,12 @@ export const events = [
     location: "东区 A 路口",
     priority: "P0",
     status: "待派单",
+    flowStage: 0,
     owner: "东区一组",
     nextAction: "派车清运",
     deadline: "30 分钟内",
+    createdAt: "2026-05-20 08:15",
+    reporter: "巡查员 张明",
   },
   {
     eventId: "EVT-20260520-002",
@@ -60,9 +67,12 @@ export const events = [
     location: "核心商圈北门",
     priority: "P1",
     status: "处理中",
+    flowStage: 2,
     owner: "机动作业队",
     nextAction: "现场复核",
     deadline: "45 分钟内",
+    createdAt: "2026-05-20 08:30",
+    reporter: "巡查员 李华",
   },
   {
     eventId: "EVT-20260520-003",
@@ -71,9 +81,12 @@ export const events = [
     location: "南区中转站",
     priority: "P1",
     status: "待协调",
+    flowStage: 1,
     owner: "南区主管",
     nextAction: "调配备用车辆",
     deadline: "60 分钟内",
+    createdAt: "2026-05-20 09:00",
+    reporter: "司机 王强",
   },
   {
     eventId: "EVT-20260520-004",
@@ -82,10 +95,78 @@ export const events = [
     location: "西区环城路",
     priority: "P2",
     status: "待复核",
+    flowStage: 3,
     owner: "西区二组",
     nextAction: "复核关闭",
     deadline: "90 分钟内",
+    createdAt: "2026-05-20 09:20",
+    reporter: "巡查员 赵刚",
   },
+  {
+    eventId: "EVT-20260520-005",
+    districtId: "district-east",
+    type: "垃圾桶损坏",
+    location: "东区 B 街",
+    priority: "P2",
+    status: "待派单",
+    flowStage: 0,
+    owner: "东区一组",
+    nextAction: "派维修组更换",
+    deadline: "120 分钟内",
+    createdAt: "2026-05-20 09:35",
+    reporter: "巡查员 张明",
+  },
+  {
+    eventId: "EVT-20260520-006",
+    districtId: "district-south",
+    type: "异味投诉",
+    location: "南区居民区 C 栋",
+    priority: "P1",
+    status: "处理中",
+    flowStage: 2,
+    owner: "南区二组",
+    nextAction: "现场核查",
+    deadline: "40 分钟内",
+    createdAt: "2026-05-20 10:00",
+    reporter: "市民热线",
+  },
+  {
+    eventId: "EVT-20260520-007",
+    districtId: "district-west",
+    type: "绿化带倾倒",
+    location: "西区公园路",
+    priority: "P2",
+    status: "已关闭",
+    flowStage: 4,
+    owner: "西区一组",
+    nextAction: "",
+    deadline: "已完成",
+    createdAt: "2026-05-20 07:00",
+    reporter: "巡查员 赵刚",
+  },
+  {
+    eventId: "EVT-20260520-008",
+    districtId: "district-east",
+    type: "道路抛洒",
+    location: "东区快速路辅道",
+    priority: "P0",
+    status: "待协调",
+    flowStage: 1,
+    owner: "机动作业队",
+    nextAction: "调度清运车支援",
+    deadline: "20 分钟内",
+    createdAt: "2026-05-20 10:15",
+    reporter: "巡查员 张明",
+  },
+];
+
+// 流转节点定义
+export const flowStages = [
+  { key: "dispatch", label: "待派单", icon: "📋" },
+  { key: "coordinate", label: "协调中", icon: "🔄" },
+  { key: "processing", label: "处理中", icon: "🔧" },
+  { key: "review", label: "待复核", icon: "🔍" },
+  { key: "closed", label: "已关闭", icon: "✅" },
 ];
 
 export const aiSuggestions = [
@@ -93,16 +174,57 @@ export const aiSuggestions = [
     suggestionId: "AI-001",
     eventId: "EVT-20260520-001",
     riskLevel: "高风险",
+    riskTone: "danger",
     recommendation: "优先派东区一组前往处理，并安排 1 辆清运车支援。",
     reason: "核心通行路口、待处理事件较多、存在超时风险。",
     resourceHint: "东区一组 / 清运车 02",
+    confidence: 87,
+    accepted: false,
   },
   {
     suggestionId: "AI-002",
     eventId: "EVT-20260520-003",
     riskLevel: "中风险",
+    riskTone: "warning",
     recommendation: "先调配备用车辆，再由南区主管确认是否需要跨片区支援。",
     reason: "中转站作业受影响，但当前仍有可用人员接续处理。",
     resourceHint: "备用车 05 / 南区主管",
+    confidence: 72,
+    accepted: false,
+  },
+  {
+    suggestionId: "AI-003",
+    eventId: "EVT-20260520-008",
+    riskLevel: "高风险",
+    riskTone: "danger",
+    recommendation: "立即调度机动清运队前往快速路辅道，优先清理抛洒物避免交通影响。",
+    reason: "快速路车流量大、P0 优先级、剩余处理时限不足 20 分钟。",
+    resourceHint: "机动作业队 / 清运车 03 / 洒水车 01",
+    confidence: 92,
+    accepted: false,
+  },
+  {
+    suggestionId: "AI-004",
+    eventId: "EVT-20260520-006",
+    riskLevel: "中风险",
+    riskTone: "warning",
+    recommendation: "南区二组加派 1 人到场协助，缩短异味处置周期，避免居民二次投诉。",
+    reason: "市民热线投诉事件、对公众形象影响较大、需快速闭环。",
+    resourceHint: "南区二组 / 消杀设备 01",
+    confidence: 78,
+    accepted: false,
   },
 ];
+
+// 全局 KPI 摘要计算
+export function getKPISummary() {
+  const total = events.length;
+  const pending = events.filter((e) => e.flowStage < 4).length;
+  const overdue = events.filter(
+    (e) => e.flowStage < 4 && e.priority === "P0",
+  ).length;
+  const abnormalDistricts = districts.filter(
+    (d) => d.statusTone === "danger" || d.statusTone === "warning",
+  ).length;
+  return { total, pending, overdue, abnormalDistricts };
+}

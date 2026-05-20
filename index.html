@@ -1,68 +1,29 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>事件调度与管理看板 MVP 原型</title>
+    <title>事件调度与管理看板 — 集成原型</title>
     <link rel="stylesheet" href="assets/css/styles.css" />
   </head>
   <body>
     <header class="app-header">
       <div>
-        <p class="eyebrow">Sanitation Dispatch Prototype</p>
+        <p class="eyebrow">Sanitation Dispatch Prototype · Integrated</p>
         <h1>事件调度与管理看板</h1>
       </div>
-      <div class="header-summary" aria-label="今日运行摘要">
+      <div class="header-summary" aria-label="运行摘要">
         <span>4 个片区</span>
-        <span>16 个事件</span>
+        <span>8 个事件</span>
         <span>AI 辅助判断</span>
+        <span class="tag state-normal">Port 4000</span>
       </div>
     </header>
 
-    <main class="dashboard-shell">
-      <section class="panel panel-wide" id="district-overview" aria-labelledby="district-overview-title">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">Overview</p>
-            <h2 id="district-overview-title">片区总览</h2>
-          </div>
-          <span class="status-pill">占位模块</span>
-        </div>
-        <div class="district-grid" data-render="districts"></div>
-      </section>
+    <nav class="tab-nav" aria-label="模块导航"></nav>
 
-      <section class="panel" id="event-list" aria-labelledby="event-list-title">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">Events</p>
-            <h2 id="event-list-title">事件列表</h2>
-          </div>
-          <span class="status-pill">静态样例</span>
-        </div>
-        <div class="event-stack" data-render="events"></div>
-      </section>
-
-      <section class="panel" id="event-detail" aria-labelledby="event-detail-title">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">Detail</p>
-            <h2 id="event-detail-title">事件详情</h2>
-          </div>
-          <span class="status-pill">占位信息</span>
-        </div>
-        <div class="detail-placeholder" data-render="event-detail"></div>
-      </section>
-
-      <section class="panel panel-wide" id="ai-suggestions" aria-labelledby="ai-suggestions-title">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">AI Assist</p>
-            <h2 id="ai-suggestions-title">AI 建议</h2>
-          </div>
-          <span class="status-pill">仅展示结构</span>
-        </div>
-        <div class="suggestion-grid" data-render="ai-suggestions"></div>
-      </section>
+    <main class="dashboard-shell" id="module-container">
+      <!-- 模块动态渲染区域 -->
     </main>
 
     <script type="module" src="assets/js/app.js"></script>
