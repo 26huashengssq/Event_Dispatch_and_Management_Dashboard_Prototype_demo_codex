@@ -1,4 +1,4 @@
-﻿// Simple static server - configurable port
+﻿// 事件调度与管理看板 — 静态服务器 + API 路由
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -18,14 +18,24 @@ const MIME = {
 };
 
 const server = http.createServer((req, res) => {
-  let filePath = path.join(ROOT, req.url === "/" ? "index.html" : req.url);
+  let filePath;
+
+  // /api/* 路由 → 映射到 api/*.json
+  if (req.url.startsWith("/api/")) {
+    filePath = path.join(ROOT, req.url + ".json");
+  } else if (req.url === "/") {
+    filePath = path.join(ROOT, "index.html");
+  } else {
+    filePath = path.join(ROOT, req.url);
+  }
+
   const ext = path.extname(filePath);
   const contentType = MIME[ext] || "application/octet-stream";
 
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-      res.end("404 Not Found");
+      res.writeHead(404, { "Content-Type": "application/json; charset=utf-8" });
+      res.end(JSON.stringify({ error: "Not Found", path: req.url }));
       return;
     }
     res.writeHead(200, { "Content-Type": contentType });
@@ -34,6 +44,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`\u2714 Server running at http://localhost:${PORT}`);
-  console.log("Press Ctrl+C to stop");
+  console.log(`✔ 看板服务已启动: http://localhost:${PORT}`);
+  console.log(`  API 接口: /api/districts /api/events /api/flowStages /api/aiSuggestions /api/kpi`);
+  console.log("  按 Ctrl+C 停止");
 });

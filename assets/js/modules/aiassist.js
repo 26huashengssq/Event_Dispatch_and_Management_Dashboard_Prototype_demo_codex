@@ -1,16 +1,23 @@
-﻿// ============================================================
-// AI Assist 模块 — AI 建议 + 风险分析 + 人工确认
 // ============================================================
-import { aiSuggestions, events, districts } from "../data.js";
+// AI Assist 模块 — 对接 /api/* 接口
+// ============================================================
+import { fetchAiAssistData } from "../api.js";
 
 let acceptedSet = new Set();
 
-export function initAiAssist(container) {
+export async function initAiAssist(container) {
   acceptedSet = new Set();
-  render(container);
+  container.innerHTML = '<div class="loading-msg">⏳ 加载 AI 建议数据…</div>';
+
+  try {
+    const { aiSuggestions, events, districts } = await fetchAiAssistData();
+    render(container, aiSuggestions, events, districts);
+  } catch (err) {
+    container.innerHTML = `<div class="error-msg">❌ 数据加载失败：${err.message}</div>`;
+  }
 }
 
-function render(container) {
+function render(container, aiSuggestions, events, districts) {
   const suggestions = aiSuggestions.map((s) => ({
     ...s,
     _accepted: acceptedSet.has(s.suggestionId),
@@ -38,11 +45,11 @@ function render(container) {
         </div>
         <span class="status-pill">${suggestions.filter((s) => s._accepted).length} 条已采纳</span>
       </div>
-      <div class="suggestion-grid-detailed">${renderSuggestionCards(suggestions)}</div>
+      <div class="suggestion-grid-detailed">${renderSuggestionCards(suggestions, events, districts)}</div>
     </section>
   `;
 
-  bindEvents(container, suggestions);
+  bindEvents(container, suggestions, events, districts);
 }
 
 function renderRiskSummary(suggestions) {
@@ -73,7 +80,7 @@ function renderRiskSummary(suggestions) {
   `;
 }
 
-function renderSuggestionCards(suggestions) {
+function renderSuggestionCards(suggestions, events, districts) {
   return suggestions
     .map((s) => {
       const event = events.find((e) => e.eventId === s.eventId);
@@ -124,7 +131,7 @@ function renderSuggestionCards(suggestions) {
     .join("");
 }
 
-function bindEvents(container, suggestions) {
+function bindEvents(container, suggestions, events, districts) {
   container.querySelectorAll(".btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const action = btn.dataset.action;
@@ -132,7 +139,7 @@ function bindEvents(container, suggestions) {
 
       if (action === "accept") {
         acceptedSet.add(id);
-        render(container);
+        render(container, suggestions, events, districts);
       } else if (action === "adjust") {
         const card = btn.closest(".suggestion-card-full");
         const feedback = document.createElement("div");

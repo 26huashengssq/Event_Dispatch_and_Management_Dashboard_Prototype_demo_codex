@@ -1,0 +1,5 @@
+districtId,name,status,statusTone,todayEvents,pendingEvents,overdueEvents,resources
+district-east,东区,异常,danger,6,3,1,"2 车 / 8 人"
+district-south,南区,预警,warning,4,2,0,"3 车 / 10 人"
+district-core,核心商圈,处理中,processing,5,2,1,"1 车 / 6 人"
+district-west,西区,正常,normal,4,1,0,"4 车 / 12 人"

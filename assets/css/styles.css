@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   color-scheme: light;
   --bg: #f4f7f6;
   --surface: #ffffff;
@@ -707,4 +707,18 @@ h3 { font-size: 14px; font-weight: 700; }
   .flow-node:not(:last-child) {
     margin-right: 0;
   }
+}
+
+
+
+/* ---- 加载 & 错误状态 ---- */
+.loading-msg,
+.error-msg {
+  text-align: center;
+  padding: 48px 24px;
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+}
+.error-msg {
+  color: #c62828;
 }

@@ -1,0 +1,42 @@
+﻿[
+  {
+    "districtId": "district-east",
+    "name": "东区",
+    "status": "异常",
+    "statusTone": "danger",
+    "todayEvents": 6,
+    "pendingEvents": 3,
+    "overdueEvents": 1,
+    "resources": "2 车 / 8 人"
+  },
+  {
+    "districtId": "district-south",
+    "name": "南区",
+    "status": "预警",
+    "statusTone": "warning",
+    "todayEvents": 4,
+    "pendingEvents": 2,
+    "overdueEvents": 0,
+    "resources": "3 车 / 10 人"
+  },
+  {
+    "districtId": "district-core",
+    "name": "核心商圈",
+    "status": "处理中",
+    "statusTone": "processing",
+    "todayEvents": 5,
+    "pendingEvents": 2,
+    "overdueEvents": 1,
+    "resources": "1 车 / 6 人"
+  },
+  {
+    "districtId": "district-west",
+    "name": "西区",
+    "status": "正常",
+    "statusTone": "normal",
+    "todayEvents": 4,
+    "pendingEvents": 1,
+    "overdueEvents": 0,
+    "resources": "4 车 / 12 人"
+  }
+]

@@ -1,7 +1,7 @@
-﻿// ============================================================
-// Event Flow 模块 — 流转节点可视化 + 事件详情 + 操作反馈
 // ============================================================
-import { districts, events, flowStages } from "../data.js";
+// Event Flow 模块 — 对接 /api/* 接口
+// ============================================================
+import { fetchEventFlowData } from "../api.js";
 
 const toneClass = {
   normal: "state-normal",
@@ -13,13 +13,20 @@ const toneClass = {
 let selectedEventId = null;
 let activeFlowStage = null;
 
-export function initEventFlow(container) {
+export async function initEventFlow(container) {
   selectedEventId = null;
   activeFlowStage = null;
-  render(container);
+  container.innerHTML = '<div class="loading-msg">⏳ 加载流转数据…</div>';
+
+  try {
+    const { districts, events, flowStages } = await fetchEventFlowData();
+    render(container, districts, events, flowStages);
+  } catch (err) {
+    container.innerHTML = `<div class="error-msg">❌ 数据加载失败：${err.message}</div>`;
+  }
 }
 
-function render(container) {
+function render(container, districts, events, flowStages) {
   container.innerHTML = `
     <section class="panel panel-wide" id="flow-pipeline">
       <div class="panel-heading">
@@ -29,7 +36,7 @@ function render(container) {
         </div>
         <span class="status-pill">${events.length} 个事件</span>
       </div>
-      <div class="flow-stages">${renderFlowStages()}</div>
+      <div class="flow-stages">${renderFlowStages(events, flowStages)}</div>
     </section>
 
     <div class="flow-two-col">
@@ -39,9 +46,9 @@ function render(container) {
             <p class="eyebrow">Events</p>
             <h2>${activeFlowStage ? flowStages.find((s) => s.key === activeFlowStage).label + " · " : ""}事件列表</h2>
           </div>
-          <span class="status-pill">${getFlowFilteredEvents().length} 个</span>
+          <span class="status-pill">${getFlowFilteredEvents(events, flowStages).length} 个</span>
         </div>
-        <div class="event-stack">${renderFlowEventCards()}</div>
+        <div class="event-stack">${renderFlowEventCards(events, flowStages)}</div>
       </section>
 
       <section class="panel" id="flow-detail">
@@ -52,19 +59,19 @@ function render(container) {
           </div>
           <span class="status-pill">${selectedEventId ? selectedEventId : "请选择事件"}</span>
         </div>
-        <div class="detail-placeholder">${renderEventDetail()}</div>
-        ${selectedEventId ? renderActionPanel() : ""}
+        <div class="detail-placeholder">${renderEventDetail(districts, events, flowStages)}</div>
+        ${selectedEventId ? renderActionPanel(events, flowStages) : ""}
       </section>
     </div>
   `;
 
-  bindEvents(container);
+  bindEvents(container, districts, events, flowStages);
 }
 
-function renderFlowStages() {
-  const counts = flowStages.map((stage) => ({
+function renderFlowStages(events, flowStages) {
+  const counts = flowStages.map((stage, idx) => ({
     ...stage,
-    count: events.filter((e) => e.flowStage === flowStages.indexOf(stage)).length,
+    count: events.filter((e) => e.flowStage === idx).length,
   }));
 
   return counts
@@ -79,14 +86,14 @@ function renderFlowStages() {
     .join("");
 }
 
-function getFlowFilteredEvents() {
+function getFlowFilteredEvents(events, flowStages) {
   if (!activeFlowStage) return events;
   const stageIdx = flowStages.findIndex((s) => s.key === activeFlowStage);
   return events.filter((e) => e.flowStage === stageIdx);
 }
 
-function renderFlowEventCards() {
-  const filtered = getFlowFilteredEvents();
+function renderFlowEventCards(events, flowStages) {
+  const filtered = getFlowFilteredEvents(events, flowStages);
   if (filtered.length === 0) {
     return '<p class="meta empty-msg">该阶段暂无事件</p>';
   }
@@ -108,7 +115,7 @@ function renderFlowEventCards() {
     .join("");
 }
 
-function renderEventDetail() {
+function renderEventDetail(districts, events, flowStages) {
   if (!selectedEventId) {
     return '<p class="meta empty-msg">请从左侧列表选择一个事件查看详情</p>';
   }
@@ -144,7 +151,7 @@ function renderEventDetail() {
   `;
 }
 
-function renderActionPanel() {
+function renderActionPanel(events, flowStages) {
   const event = events.find((e) => e.eventId === selectedEventId);
   if (!event || event.flowStage >= 4) return "";
 
@@ -170,25 +177,22 @@ function renderActionPanel() {
   `;
 }
 
-function bindEvents(container) {
-  // Flow stage click
+function bindEvents(container, districts, events, flowStages) {
   container.querySelectorAll(".flow-node").forEach((node) => {
     node.addEventListener("click", () => {
       activeFlowStage = activeFlowStage === node.dataset.stage ? null : node.dataset.stage;
       selectedEventId = null;
-      render(container);
+      render(container, districts, events, flowStages);
     });
   });
 
-  // Event card click
   container.querySelectorAll(".event-card").forEach((card) => {
     card.addEventListener("click", () => {
       selectedEventId = selectedEventId === card.dataset.event ? null : card.dataset.event;
-      render(container);
+      render(container, districts, events, flowStages);
     });
   });
 
-  // Action buttons
   container.querySelectorAll(".btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const action = btn.dataset.action;

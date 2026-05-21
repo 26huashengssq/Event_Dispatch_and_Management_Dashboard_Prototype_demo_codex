@@ -1,7 +1,7 @@
-﻿// ============================================================
-// Dashboard Overview 模块
 // ============================================================
-import { districts, events, getKPISummary } from "../data.js";
+// Dashboard Overview 模块 — 对接 /api/* 接口
+// ============================================================
+import { fetchDashboardData } from "../api.js";
 
 const toneClass = {
   normal: "state-normal",
@@ -12,13 +12,19 @@ const toneClass = {
 
 let selectedDistrictId = null;
 
-export function initDashboard(container) {
+export async function initDashboard(container) {
   selectedDistrictId = null;
-  render(container);
+  container.innerHTML = '<div class="loading-msg">⏳ 加载片区数据…</div>';
+
+  try {
+    const { districts, events, kpi } = await fetchDashboardData();
+    render(container, districts, events, kpi);
+  } catch (err) {
+    container.innerHTML = `<div class="error-msg">❌ 数据加载失败：${err.message}</div>`;
+  }
 }
 
-function render(container) {
-  const kpi = getKPISummary();
+function render(container, districts, events, kpi) {
   container.innerHTML = `
     <div class="kpi-bar">
       <div class="kpi-item">
@@ -47,7 +53,7 @@ function render(container) {
         </div>
         ${selectedDistrictId ? '<button class="btn-back" id="btn-back-overview">← 返回总览</button>' : '<span class="status-pill">点击片区查看详情</span>'}
       </div>
-      <div class="district-grid">${renderDistrictCards()}</div>
+      <div class="district-grid">${renderDistrictCards(districts)}</div>
     </section>
 
     <section class="panel panel-wide" id="event-list">
@@ -56,16 +62,16 @@ function render(container) {
           <p class="eyebrow">Events</p>
           <h2>${selectedDistrictId ? "片区事件列表" : "全部事件列表"}</h2>
         </div>
-        <span class="status-pill">${getFilteredEvents().length} 个事件</span>
+        <span class="status-pill">${getFilteredEvents(events).length} 个事件</span>
       </div>
-      <div class="event-stack">${renderEventCards()}</div>
+      <div class="event-stack">${renderEventCards(events)}</div>
     </section>
   `;
 
-  bindEvents(container);
+  bindEvents(container, districts, events, kpi);
 }
 
-function renderDistrictCards() {
+function renderDistrictCards(districts) {
   return districts
     .map(
       (d) => `
@@ -94,13 +100,13 @@ function renderDistrictCards() {
     .join("");
 }
 
-function getFilteredEvents() {
+function getFilteredEvents(events) {
   if (!selectedDistrictId) return events;
   return events.filter((e) => e.districtId === selectedDistrictId);
 }
 
-function renderEventCards() {
-  const filtered = getFilteredEvents();
+function renderEventCards(events) {
+  const filtered = getFilteredEvents(events);
   if (filtered.length === 0) {
     return '<p class="meta empty-msg">暂无事件数据</p>';
   }
@@ -122,12 +128,12 @@ function renderEventCards() {
     .join("");
 }
 
-function bindEvents(container) {
+function bindEvents(container, districts, events, kpi) {
   container.querySelectorAll(".district-card").forEach((card) => {
     card.addEventListener("click", () => {
       const id = card.dataset.district;
       selectedDistrictId = id === selectedDistrictId ? null : id;
-      render(container);
+      render(container, districts, events, kpi);
     });
   });
 
@@ -135,7 +141,7 @@ function bindEvents(container) {
   if (backBtn) {
     backBtn.addEventListener("click", () => {
       selectedDistrictId = null;
-      render(container);
+      render(container, districts, events, kpi);
     });
   }
 }
