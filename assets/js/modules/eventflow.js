@@ -131,13 +131,26 @@ function renderEventDetail(districts, events, flowStages) {
           : idx === event.flowStage
             ? "flow-step--current"
             : "flow-step--pending";
-      return `<span class="flow-mini-step ${cls}">${s.icon} ${s.label}</span>`;
+      const currentBadge =
+        idx === event.flowStage
+          ? '<strong class="flow-current-badge">当前</strong>'
+          : "";
+      const ariaCurrent = idx === event.flowStage ? ' aria-current="step"' : "";
+      return `<span class="flow-mini-step ${cls}"${ariaCurrent}>${s.icon} ${s.label}${currentBadge}</span>`;
     })
     .join('<span class="flow-mini-arrow">→</span>');
 
   return `
     <h3>${event.eventId} · ${event.type}</h3>
     <div class="flow-mini-bar">${stageFlow}</div>
+    <div class="detail-ai-entry">
+      <div>
+        <span class="field-label">AI Assist</span>
+        <strong>查看该事件 AI 辅助建议</strong>
+        <p class="meta">跳转到 AI 辅助模块，并定位到 ${event.eventId} 的调度建议。</p>
+      </div>
+      <button class="btn btn-secondary" data-action="open-ai" data-event="${event.eventId}">查看 AI 建议</button>
+    </div>
     <dl class="detail-list">
       <dt>所属片区</dt><dd>${district ? district.name : "未知"}</dd>
       <dt>事件位置</dt><dd>${event.location}</dd>
@@ -197,6 +210,15 @@ function bindEvents(container, districts, events, flowStages) {
     btn.addEventListener("click", () => {
       const action = btn.dataset.action;
       const eventId = btn.dataset.event;
+      if (action === "open-ai") {
+        window.dispatchEvent(
+          new CustomEvent("app:navigate", {
+            detail: { tab: "aiassist", eventId },
+          }),
+        );
+        return;
+      }
+
       const feedback = container.querySelector("#action-feedback");
       const messages = {
         confirm: `✅ 事件 ${eventId} 已推进至下一节点。`,

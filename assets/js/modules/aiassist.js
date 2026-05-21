@@ -5,23 +5,30 @@ import { fetchAiAssistData } from "../api.js";
 
 let acceptedSet = new Set();
 
-export async function initAiAssist(container) {
+export async function initAiAssist(container, context = {}) {
   acceptedSet = new Set();
   container.innerHTML = '<div class="loading-msg">⏳ 加载 AI 建议数据…</div>';
 
   try {
     const { aiSuggestions, events, districts } = await fetchAiAssistData();
-    render(container, aiSuggestions, events, districts);
+    render(container, aiSuggestions, events, districts, context.eventId || null);
   } catch (err) {
     container.innerHTML = `<div class="error-msg">❌ 数据加载失败：${err.message}</div>`;
   }
 }
 
-function render(container, aiSuggestions, events, districts) {
+function render(container, aiSuggestions, events, districts, focusedEventId = null) {
   const suggestions = aiSuggestions.map((s) => ({
     ...s,
     _accepted: acceptedSet.has(s.suggestionId),
   }));
+  const orderedSuggestions = focusedEventId
+    ? [
+        ...suggestions.filter((s) => s.eventId === focusedEventId),
+        ...suggestions.filter((s) => s.eventId !== focusedEventId),
+      ]
+    : suggestions;
+  const focusedSuggestion = suggestions.find((s) => s.eventId === focusedEventId);
 
   container.innerHTML = `
     <section class="panel panel-wide" id="ai-risk">
@@ -43,13 +50,21 @@ function render(container, aiSuggestions, events, districts) {
           <p class="eyebrow">AI Recommendations</p>
           <h2>调度建议与资源匹配</h2>
         </div>
-        <span class="status-pill">${suggestions.filter((s) => s._accepted).length} 条已采纳</span>
+        <span class="status-pill">${focusedEventId ? `定位事件 ${focusedEventId}` : `${suggestions.filter((s) => s._accepted).length} 条已采纳`}</span>
       </div>
-      <div class="suggestion-grid-detailed">${renderSuggestionCards(suggestions, events, districts)}</div>
+      ${focusedEventId && !focusedSuggestion ? `<p class="meta ai-focus-empty">当前事件 ${focusedEventId} 暂无 AI 建议，仍可查看其他风险建议。</p>` : ""}
+      <div class="suggestion-grid-detailed">${renderSuggestionCards(orderedSuggestions, events, districts, focusedEventId)}</div>
     </section>
   `;
 
-  bindEvents(container, suggestions, events, districts);
+  if (focusedEventId && focusedSuggestion) {
+    requestAnimationFrame(() => {
+      const card = container.querySelector(`[data-focus-event="${focusedEventId}"]`);
+      if (card) card.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  bindEvents(container, suggestions, events, districts, focusedEventId);
 }
 
 function renderRiskSummary(suggestions) {
@@ -80,16 +95,17 @@ function renderRiskSummary(suggestions) {
   `;
 }
 
-function renderSuggestionCards(suggestions, events, districts) {
+function renderSuggestionCards(suggestions, events, districts, focusedEventId) {
   return suggestions
     .map((s) => {
       const event = events.find((e) => e.eventId === s.eventId);
       const district = event ? districts.find((d) => d.districtId === event.districtId) : null;
       const toneMap = { danger: "state-danger", warning: "state-warning", normal: "state-normal" };
       const cls = toneMap[s.riskTone] || "state-normal";
+      const focusClass = s.eventId === focusedEventId ? "suggestion-card--focused" : "";
 
       return `
-    <article class="suggestion-card-full ${s._accepted ? "suggestion-accepted" : ""}">
+    <article class="suggestion-card-full ${focusClass} ${s._accepted ? "suggestion-accepted" : ""}" data-focus-event="${s.eventId}">
       <div class="suggestion-header">
         <div>
           <h3>${s.eventId}</h3>
@@ -131,7 +147,7 @@ function renderSuggestionCards(suggestions, events, districts) {
     .join("");
 }
 
-function bindEvents(container, suggestions, events, districts) {
+function bindEvents(container, suggestions, events, districts, focusedEventId) {
   container.querySelectorAll(".btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const action = btn.dataset.action;
@@ -139,7 +155,7 @@ function bindEvents(container, suggestions, events, districts) {
 
       if (action === "accept") {
         acceptedSet.add(id);
-        render(container, suggestions, events, districts);
+        render(container, suggestions, events, districts, focusedEventId);
       } else if (action === "adjust") {
         const card = btn.closest(".suggestion-card-full");
         const feedback = document.createElement("div");

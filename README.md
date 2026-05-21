@@ -1,5 +1,5 @@
 # Event_Dispatch_and_Management_Dashboard_Prototype_demo_codex
-# 事件调度与管理看板 — 集成原型 v1.0.0
+# 事件调度与管理看板 — 集成原型 v1.1.0
 
 > 为大型环卫集团设计的"事件调度与管理看板"MVP 交互原型，集成片区总览、事件流转与 AI 辅助三大功能模块。
 
@@ -38,16 +38,21 @@
 │   │   └── styles.css             # 全套样式（KPI栏、流转节点、AI卡片等）
 │   └── js/
 │       ├── app.js                 # 主控制器（Tab 路由 + 模块调度）
-│       ├── data.js                # 数据层（8个事件、5个流转阶段、4条AI建议、KPI计算）
+│       ├── api.js                 # API 服务层（统一请求 /api/*）
 │       └── modules/
 │           ├── dashboard.js       # 📊 片区总览模块
 │           ├── eventflow.js       # 🔄 事件流转模块
 │           └── aiassist.js        # 🤖 AI 辅助模块
+├── api/                            # 由 data/*.csv 生成的静态 JSON 接口数据
+├── data/                           # CSV 源数据
 ├── docs/
 │   ├── 需求理解说明.md             # 一页纸需求分析与设计理念
-│   └── 页面功能结构图.md           # 页面链路与角色视角对应关系
+│   ├── 页面功能结构图.md           # 页面链路与角色视角对应关系
+│   ├── 讲解提纲.md                 # 5-10 分钟讲解说明
+│   └── v1.1.0更新规划.md           # v1.1.0 基础修复与补齐规划
 └── scripts/
-    └── verify-prototype-base.ps1  # 原型完整性验证脚本
+    ├── sync-api-from-csv.ps1       # CSV → API JSON 同步脚本
+    └── verify-prototype-base.ps1   # 原型完整性验证脚本
 ```
 
 ---
@@ -74,11 +79,16 @@ set PORT=8081 && node server.js
 
 ## 模拟数据
 
-原型使用模拟数据表达片区、事件、人员和 AI 建议，不接入真实接口：
+原型使用模拟数据表达片区、事件、人员和 AI 建议，不接入真实生产接口。`data/*.csv` 是源数据，`api/*.json` 由脚本生成并供前端读取：
 
 - **4 个片区**：东区（异常）、南区（预警）、核心商圈（处理中）、西区（正常）
 - **8 个事件**：覆盖 P0/P1/P2 优先级，贯穿待派单→协调中→处理中→待复核→已关闭 全生命周期
 - **4 条 AI 建议**：包含风险等级、置信度、判断原因、推荐动作和资源匹配
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/sync-api-from-csv.ps1
+powershell -ExecutionPolicy Bypass -File scripts/sync-api-from-csv.ps1 -Check
+```
 
 ---
 
@@ -99,6 +109,8 @@ set PORT=8081 && node server.js
 | 版本 | 日期 | 内容 |
 |---|---|---|
 | v1.0.0 | 2026-05-20 | 首发版本：Tab 导航 + 三大功能模块集成 + 静态服务器 |
+| v1.0.1 | 2026-05-21 | 静态数据改为 `/api/*.json` 外部数据接口，并补充 CSV 备用数据 |
+| v1.1.0 | 2026-05-21 | 基础修复与补齐：CSV 生成 API JSON、KPI 双指标、事件状态标注、事件详情 AI 入口、验证脚本、测试、讲解文档、JSON 无 BOM |
 
 ---
 

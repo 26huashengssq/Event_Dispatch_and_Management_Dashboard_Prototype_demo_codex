@@ -1,6 +1,7 @@
-﻿{
-  "total": 8,
-  "pending": 7,
-  "overdue": 2,
-  "abnormalDistricts": 2
+{
+    "total":  8,
+    "pending":  7,
+    "urgent":  2,
+    "overdue":  2,
+    "abnormalDistricts":  2
 }

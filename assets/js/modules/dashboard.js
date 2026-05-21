@@ -36,8 +36,12 @@ function render(container, districts, events, kpi) {
         <span>待处理</span>
       </div>
       <div class="kpi-item kpi-danger">
-        <strong>${kpi.overdue}</strong>
+        <strong>${kpi.urgent}</strong>
         <span>P0 紧急</span>
+      </div>
+      <div class="kpi-item kpi-danger">
+        <strong>${kpi.overdue}</strong>
+        <span>超时事件</span>
       </div>
       <div class="kpi-item">
         <strong>${kpi.abnormalDistricts}</strong>

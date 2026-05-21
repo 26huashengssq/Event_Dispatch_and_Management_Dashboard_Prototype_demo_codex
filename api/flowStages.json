@@ -1,7 +1,27 @@
-﻿[
-  { "key": "dispatch", "label": "待派单", "icon": "📋" },
-  { "key": "coordinate", "label": "协调中", "icon": "🔄" },
-  { "key": "processing", "label": "处理中", "icon": "🔧" },
-  { "key": "review", "label": "待复核", "icon": "🔍" },
-  { "key": "closed", "label": "已关闭", "icon": "✅" }
+[
+    {
+        "key":  "dispatch",
+        "label":  "待派单",
+        "icon":  "📋"
+    },
+    {
+        "key":  "coordinate",
+        "label":  "协调中",
+        "icon":  "🔄"
+    },
+    {
+        "key":  "processing",
+        "label":  "处理中",
+        "icon":  "🔧"
+    },
+    {
+        "key":  "review",
+        "label":  "待复核",
+        "icon":  "🔍"
+    },
+    {
+        "key":  "closed",
+        "label":  "已关闭",
+        "icon":  "✅"
+    }
 ]

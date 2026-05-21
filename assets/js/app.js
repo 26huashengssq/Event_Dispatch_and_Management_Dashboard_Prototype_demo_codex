@@ -12,6 +12,7 @@ const tabs = [
 ];
 
 let currentTab = "dashboard";
+let currentContext = {};
 
 function renderTabs() {
   const nav = document.querySelector(".tab-nav");
@@ -25,6 +26,7 @@ function renderTabs() {
   nav.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       currentTab = btn.dataset.tab;
+      currentContext = {};
       renderTabs();
       renderContent();
     });
@@ -35,11 +37,20 @@ function renderContent() {
   const container = document.getElementById("module-container");
   const tab = tabs.find((t) => t.id === currentTab);
   if (tab) {
-    tab.module(container);
+    tab.module(container, currentContext);
   }
 }
 
 function init() {
+  window.addEventListener("app:navigate", (event) => {
+    const { tab, ...context } = event.detail || {};
+    if (!tabs.some((item) => item.id === tab)) return;
+    currentTab = tab;
+    currentContext = context;
+    renderTabs();
+    renderContent();
+  });
+
   renderTabs();
   renderContent();
 }
